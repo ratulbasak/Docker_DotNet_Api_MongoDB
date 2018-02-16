@@ -6,6 +6,47 @@ This is the first blog post, presenting the backend associated with a sample app
 
 It is a quick walkthrough on using .NET Core 2 to build a Web API layer using MongoDB .NET Driver version 2. All the calls to the database are asynchronous.  
 
+#### docker-compose.yml
+```
+
+version: '3'
+
+services:
+    nginx:
+        image: nginx
+        container_name: nginx
+        ports:
+            - "80:80"
+        volumes:
+            - ./nginx.conf:/etc/nginx/nginx.conf
+        links:
+            - dotnetapi
+
+    dotnetapi:
+        image: apidocker
+        build:
+           context: .
+           dockerfile: ./Dockerfile
+        container_name: dotnetapi
+        ports:
+            - "5000:5000"
+        depends_on:
+            - mongodb
+
+    mongodb:
+        image: aashreys/mongo-auth:latest
+        container_name: mongodb
+        ports:
+            - "27017:27017"
+        environment:
+            - AUTH=yes
+            - MONGODB_ADMIN_USER=admin
+            - MONGODB_ADMIN_PASS=admin123
+            - MONGODB_APPLICATION_USER=root
+            - MONGODB_APPLICATION_PASS=123456
+            - MONGODB_APPLICATION_DATABASE=NotesDb
+```
+
 #### Topics Covered
 - Technology stack
 - Configuration model
